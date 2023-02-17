@@ -487,12 +487,23 @@ window.addEventListener('DOMContentLoaded', function() {
     })
 
     let result=document.querySelector('.calculating__result span');
-    let sex='female',height,weight,age,ratio=1.375;
-    // sex=document.querySelector('#gender'),
-    // height=document.querySelector('#height'),
-    // weight=document.querySelector('#weight'),
-    // age=document.querySelector('#ratio'),
-    // ratio=document.querySelector('')
+  
+    let sex,height,weight,age,ratio;
+    if (localStorage.getItem('sex')){
+        sex=localStorage.getItem('sex');
+    } else {
+        sex='female';
+        localStorage.setItem('sex','female');
+    }
+
+    if (localStorage.getItem('ratio')){
+        ratio=localStorage.getItem('ratio');
+    } else {
+        ratio=1.375;
+        localStorage.setItem('ratio', 1.375);
+    }
+
+    
 
     function calcTotal(){
         if (!sex || !height || !weight || !age || !ratio){
@@ -507,16 +518,33 @@ window.addEventListener('DOMContentLoaded', function() {
         console.log(result)
     }   
 
+    function initLocalSettings(selector,activeClass){
+        let elements=document.querySelectorAll(selector); // ('#gender div')
+
+        elements.forEach(elem=>{ 
+            elem.classList.remove(activeClass); // удаляем все авктивные классы, например у gender
+            if(elem.getAttribute('id')===localStorage.getItem('sex')){
+                elem.classList.add(activeClass);
+            }
+            if(elem.getAttribute('data-ratio')=== localStorage.getItem('ratio')){
+                elem.classList.add(activeClass)
+            }
+        })
+    }
+    initLocalSettings('#gender div','calculating__choose-item_active');
+    initLocalSettings('.calculating__choose_big .calculating__choose-item','calculating__choose-item_active');
     calcTotal();
 
-    function getSaticInfo(parentSelector, activeClass){
-        let elements=document.querySelectorAll(`${parentSelector} div`);
+    function getSaticInfo(selector, activeClass){  // gender,activity
+        let elements=document.querySelectorAll(selector);
         elements.forEach(elem=>{
             elem.addEventListener('click', (e)=>{
                 if(e.target.getAttribute('data-ratio')){
-                    ratio= +e.target.getAttribute('data-ratio')
+                    ratio= +e.target.getAttribute('data-ratio');
+                    localStorage.setItem('ratio', +e.target.getAttribute('data-ratio'))
                 } else {
                     sex=e.target.getAttribute('id');
+                    localStorage.setItem('sex', e.target.getAttribute('id'))
                 }
                 console.log(ratio,sex);
     
@@ -532,13 +560,26 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    getSaticInfo('#gender','calculating__choose-item_active');
-    getSaticInfo('.calculating__choose_big','calculating__choose-item_active');
+    getSaticInfo('#gender .calculating__choose-item','calculating__choose-item_active');
+    getSaticInfo('.calculating__choose_big .calculating__choose-item','calculating__choose-item_active');
+
+
 
     function getDynamicInfo(selector){
         let input=document.querySelector(selector);
 
+
         input.addEventListener('input',()=>{
+
+            if(input.value.match(/\D/g)){
+                input.style.border='1px solid red';
+                input.textContent='wrong num';
+            }
+            else{
+                input.style.border='none';
+            }
+
+
             switch(input.getAttribute('id')){
                 case 'height':
                     height= +input.value;
