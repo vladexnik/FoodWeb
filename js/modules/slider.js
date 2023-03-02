@@ -1,16 +1,16 @@
-function slider(){
+function slider({container,slide,nextArrow, prevArrow,totalCounter, currentCounter,wrapper,field}){
 
     let offset=0;
     let slideIndex=1;
 
-    let slides=document.querySelectorAll('.offer__slide'),
-    prev=document.querySelector('.offer__slider-prev'),
-    next=document.querySelector('.offer__slider-next'),
-    current=document.querySelector('#current'),
-    total=document.querySelector('#total');
+    let slides=document.querySelectorAll(slide),
+    prev=document.querySelector(prevArrow),
+    next=document.querySelector(nextArrow),
+    current=document.querySelector(currentCounter),
+    total=document.querySelector(totalCounter);
     
-    let slidesWrapper=document.querySelector('.offer__slider-wrapper'),
-    slidesField=document.querySelector('.offer__slider-inner'),
+    let slidesWrapper=document.querySelector(wrapper),
+    slidesField=document.querySelector(field),
     width=window.getComputedStyle(slidesWrapper).width;
     //console.log(width)
     
@@ -112,7 +112,7 @@ function slider(){
     })
 
 
-    let slider=document.querySelector('.offer__slider');
+    let slider=document.querySelector(container);
     let dots=[];
     slider.style.position='relative';
     let indicators=document.createElement('ol');

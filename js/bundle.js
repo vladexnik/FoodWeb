@@ -142,6 +142,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _services_services__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/services */ "./js/services/services.js");
+
+
 function cards(){
     class MenuCard {
         constructor(src, alt, title, descr, price, parentSelector, ...classes) {
@@ -184,22 +187,21 @@ function cards(){
         }
     }
     
-    axios.get('http://localhost:3000/menu') // библиотека, отличие от фетча - возвр более подробный ответ и все данные в св-ве data
-        .then(datta=>{
-        datta.data.forEach(({img, altimg, title, descr, price}) => {
-        new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
-        });
-    });
-
-
-    // getResource('http://localhost:3000/menu')
-    //     .then(data => {
-    //         data.forEach(({img, altimg, title, descr, price}) => {
-    //             new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
-    //         });
+    // axios.get('http://localhost:3000/menu') // библиотека, отличие от фетча - возвр более подробный ответ и все данные в св-ве data
+    //     .then(datta=>{
+    //     datta.data.forEach(({img, altimg, title, descr, price}) => {
+    //     new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
     //     });
+    // });
 
-    // getResource('http://localhost:3000/menu')
+    (0,_services_services__WEBPACK_IMPORTED_MODULE_0__.getResource)('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({img, altimg, title, descr, price}) => {
+                new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
+            });
+        });
+    
+      // getResource('http://localhost:3000/menu')
     //     .then(data => createCard(data));
 
     // function createCard(data) {
@@ -220,7 +222,7 @@ function cards(){
     //         `;
     //         document.querySelector(".menu .container").append(element);
     //     });
-    // }
+    // }   
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (cards);
 
@@ -237,11 +239,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modal */ "./js/modules/modal.js");
+/* harmony import */ var _services_services__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/services */ "./js/services/services.js");
 
 
 
-function forms(){
-    const forms = document.querySelectorAll('form');
+
+function forms(formSelector, modalTimerId){
+    const forms = document.querySelectorAll(formSelector);
     const message = {
         loading: 'img/form/spinner.svg',
         success: 'Спасибо! Скоро мы с вами свяжемся',
@@ -252,27 +256,6 @@ function forms(){
         bindPostData(item);
     });
 
-    const postData = async (url, data) => {
-        let res = await fetch(url, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: data
-        });
-    
-        return await res.json();
-    };
-
-    async function getResource(url) {
-        let res = await fetch(url);
-    
-        if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-        }
-    
-        return await res.json();
-    }
 
     function bindPostData(form) {
         form.addEventListener('submit', (e) => {
@@ -290,7 +273,7 @@ function forms(){
 
             const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-            postData('http://localhost:3000/requests', json)
+            (0,_services_services__WEBPACK_IMPORTED_MODULE_1__.postData)('http://localhost:3000/requests', json)
             .then(data => {
                 console.log(data);
                 showThanksModal(message.success);
@@ -307,7 +290,7 @@ function forms(){
         const prevModalDialog = document.querySelector('.modal__dialog');
 
         prevModalDialog.classList.add('hide');
-        (0,_modal__WEBPACK_IMPORTED_MODULE_0__.openModal)();
+        (0,_modal__WEBPACK_IMPORTED_MODULE_0__.openModal)(modalTimerId);
 
         const thanksModal = document.createElement('div');
         thanksModal.classList.add('modal__dialog');
@@ -345,25 +328,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "openModal": () => (/* binding */ openModal)
 /* harmony export */ });
 
+
+    let modal = document.querySelector('.modal');
     function closeModal() {
         modal.classList.add('hide');
         modal.classList.remove('show');
         document.body.style.overflow = '';
     }
 
-    function openModal() {
+    function openModal(modalTimerId) {
         modal.classList.add('show');
         modal.classList.remove('hide');
         document.body.style.overflow = 'hidden';
-        clearInterval(modalTimerId);
+        
+        console.log(modalTimerId)
+        if(modalTimerId) {
+        clearInterval(modalTimerId); }
     }
 
-    function modal(){
-        const modalTrigger = document.querySelectorAll('[data-modal]'),
-            modal = document.querySelector('.modal');
+    function modall(modalTimerId){
+        const modalTrigger = document.querySelectorAll('[data-modal]');
+                     
 
         modalTrigger.forEach(btn => {
-            btn.addEventListener('click', openModal);
+            btn.addEventListener('click',()=> openModal(modalTimerId));
         });
 
         modal.addEventListener('click', (e) => {
@@ -378,12 +366,12 @@ __webpack_require__.r(__webpack_exports__);
             }
         });
 
-        const modalTimerId = setTimeout(openModal, 300000);
+        
         // Изменили значение, чтобы не отвлекало
 
         function showModalByScroll() {
             if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
-                openModal();
+                openModal(modalTimerId);
                 window.removeEventListener('scroll', showModalByScroll);
             }
         }
@@ -392,7 +380,7 @@ __webpack_require__.r(__webpack_exports__);
     }
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (modal);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (modall);
 
 
 
@@ -410,19 +398,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-function slider(){
+function slider({container,slide,nextArrow, prevArrow,totalCounter, currentCounter,wrapper,field}){
 
     let offset=0;
     let slideIndex=1;
 
-    let slides=document.querySelectorAll('.offer__slide'),
-    prev=document.querySelector('.offer__slider-prev'),
-    next=document.querySelector('.offer__slider-next'),
-    current=document.querySelector('#current'),
-    total=document.querySelector('#total');
+    let slides=document.querySelectorAll(slide),
+    prev=document.querySelector(prevArrow),
+    next=document.querySelector(nextArrow),
+    current=document.querySelector(currentCounter),
+    total=document.querySelector(totalCounter);
     
-    let slidesWrapper=document.querySelector('.offer__slider-wrapper'),
-    slidesField=document.querySelector('.offer__slider-inner'),
+    let slidesWrapper=document.querySelector(wrapper),
+    slidesField=document.querySelector(field),
     width=window.getComputedStyle(slidesWrapper).width;
     //console.log(width)
     
@@ -524,7 +512,7 @@ function slider(){
     })
 
 
-    let slider=document.querySelector('.offer__slider');
+    let slider=document.querySelector(container);
     let dots=[];
     slider.style.position='relative';
     let indicators=document.createElement('ol');
@@ -658,8 +646,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-function timer(){
-    const deadline = '2023-06-11';
+function timer(id, deadline){
+    
     function getTimeRemaining(endtime) {
         const t = Date.parse(endtime) - Date.parse(new Date()),
             days = Math.floor( (t/(1000*60*60*24)) ),
@@ -709,9 +697,50 @@ function timer(){
         }
     }
 
-    setClock('.timer', deadline);
+    setClock(id, deadline);
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (timer);
+
+/***/ }),
+
+/***/ "./js/services/services.js":
+/*!*********************************!*\
+  !*** ./js/services/services.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getResource": () => (/* binding */ getResource),
+/* harmony export */   "postData": () => (/* binding */ postData)
+/* harmony export */ });
+const postData = async (url, data) => {
+    let res = await fetch(url, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: data
+    });
+
+    return await res.json();
+};
+
+
+
+
+    async function getResource(url) {
+        let res = await fetch(url);
+    
+        if (!res.ok) {
+            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+        }
+    
+        return await res.json();
+    }
+
+
+
 
 /***/ })
 
@@ -792,16 +821,27 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-window.addEventListener('DOMContentLoaded', function() {
 
+
+window.addEventListener('DOMContentLoaded', function() {
+    const modalTimerId = setTimeout(() => (0,_modules_modal__WEBPACK_IMPORTED_MODULE_2__.openModal)(modalTimerId), 3000);
 
     (0,_modules_tabs__WEBPACK_IMPORTED_MODULE_1__["default"])();
-    (0,_modules_modal__WEBPACK_IMPORTED_MODULE_2__["default"])();
-    (0,_modules_timer__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    (0,_modules_modal__WEBPACK_IMPORTED_MODULE_2__["default"])(modalTimerId); //'[data-modal]', '.modal'
+    (0,_modules_timer__WEBPACK_IMPORTED_MODULE_3__["default"])('.timer', '2023-06-11');
     (0,_modules_cards__WEBPACK_IMPORTED_MODULE_4__["default"])();
     (0,_modules_calc_js__WEBPACK_IMPORTED_MODULE_0__["default"])();
-    (0,_modules_forms__WEBPACK_IMPORTED_MODULE_5__["default"])();
-    (0,_modules_slider__WEBPACK_IMPORTED_MODULE_6__["default"])();
+    (0,_modules_forms__WEBPACK_IMPORTED_MODULE_5__["default"])('form', modalTimerId);
+    (0,_modules_slider__WEBPACK_IMPORTED_MODULE_6__["default"])({
+        container: '.offer__slider',
+        nextArrow: '.offer__slider-next',
+        prevArrow: '.offer__slider-prev',
+        slide: '.offer__slide',
+        totalCounter: '#total',
+        currentCounter: '#current',
+        wrapper: '.offer__slider-wrapper',
+        field: '.offer__slider-inner'
+    });
 
 });
  

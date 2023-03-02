@@ -1,20 +1,31 @@
 import calc from './modules/calc.js';
 import tabs from './modules/tabs';
-import modal from './modules/modal';
+import modall from './modules/modal';
 import timer from './modules/timer';
 import cards from './modules/cards';
 import forms from './modules/forms';
 import slider from './modules/slider';
-window.addEventListener('DOMContentLoaded', function() {
+import { openModal } from './modules/modal';
 
+window.addEventListener('DOMContentLoaded', function() {
+    const modalTimerId = setTimeout(() => openModal(modalTimerId), 3000);
 
     tabs();
-    modal();
-    timer();
+    modall(modalTimerId); //'[data-modal]', '.modal'
+    timer('.timer', '2023-06-11');
     cards();
     calc();
-    forms();
-    slider();
+    forms('form', modalTimerId);
+    slider({
+        container: '.offer__slider',
+        nextArrow: '.offer__slider-next',
+        prevArrow: '.offer__slider-prev',
+        slide: '.offer__slide',
+        totalCounter: '#total',
+        currentCounter: '#current',
+        wrapper: '.offer__slider-wrapper',
+        field: '.offer__slider-inner'
+    });
 
 });
  

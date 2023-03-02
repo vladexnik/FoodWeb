@@ -1,3 +1,5 @@
+import { getResource } from "../services/services";
+
 function cards(){
     class MenuCard {
         constructor(src, alt, title, descr, price, parentSelector, ...classes) {
@@ -40,22 +42,21 @@ function cards(){
         }
     }
     
-    axios.get('http://localhost:3000/menu') // библиотека, отличие от фетча - возвр более подробный ответ и все данные в св-ве data
-        .then(datta=>{
-        datta.data.forEach(({img, altimg, title, descr, price}) => {
-        new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
-        });
-    });
-
-
-    // getResource('http://localhost:3000/menu')
-    //     .then(data => {
-    //         data.forEach(({img, altimg, title, descr, price}) => {
-    //             new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
-    //         });
+    // axios.get('http://localhost:3000/menu') // библиотека, отличие от фетча - возвр более подробный ответ и все данные в св-ве data
+    //     .then(datta=>{
+    //     datta.data.forEach(({img, altimg, title, descr, price}) => {
+    //     new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
     //     });
+    // });
 
-    // getResource('http://localhost:3000/menu')
+    getResource('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({img, altimg, title, descr, price}) => {
+                new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
+            });
+        });
+    
+      // getResource('http://localhost:3000/menu')
     //     .then(data => createCard(data));
 
     // function createCard(data) {
@@ -76,6 +77,6 @@ function cards(){
     //         `;
     //         document.querySelector(".menu .container").append(element);
     //     });
-    // }
+    // }   
 }
 export default cards;

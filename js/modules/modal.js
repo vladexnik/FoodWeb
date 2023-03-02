@@ -1,23 +1,28 @@
 
+
+    let modal = document.querySelector('.modal');
     function closeModal() {
         modal.classList.add('hide');
         modal.classList.remove('show');
         document.body.style.overflow = '';
     }
 
-    function openModal() {
+    function openModal(modalTimerId) {
         modal.classList.add('show');
         modal.classList.remove('hide');
         document.body.style.overflow = 'hidden';
-        clearInterval(modalTimerId);
+        
+        console.log(modalTimerId)
+        if(modalTimerId) {
+        clearInterval(modalTimerId); }
     }
 
-    function modal(){
-        const modalTrigger = document.querySelectorAll('[data-modal]'),
-            modal = document.querySelector('.modal');
+    function modall(modalTimerId){
+        const modalTrigger = document.querySelectorAll('[data-modal]');
+                     
 
         modalTrigger.forEach(btn => {
-            btn.addEventListener('click', openModal);
+            btn.addEventListener('click',()=> openModal(modalTimerId));
         });
 
         modal.addEventListener('click', (e) => {
@@ -32,12 +37,12 @@
             }
         });
 
-        const modalTimerId = setTimeout(openModal, 300000);
+        
         // Изменили значение, чтобы не отвлекало
 
         function showModalByScroll() {
             if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
-                openModal();
+                openModal(modalTimerId);
                 window.removeEventListener('scroll', showModalByScroll);
             }
         }
@@ -46,7 +51,7 @@
     }
 
 
-export default modal;
+export default modall;
 export {openModal};
 export {closeModal};
 
